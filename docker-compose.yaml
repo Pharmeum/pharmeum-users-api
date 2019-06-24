@@ -1,0 +1,82 @@
+version: "2.1"
+
+networks:
+  pharmeum:
+
+services:
+  pharmeum-users-postgres:
+    image: postgres:11.4-alpine
+    container_name: pharmeum-users-postgres
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - pharmeum
+
+  pharmeum-users-api-migrator:
+    container_name: pharmeum-users-api-migrator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PHARMEUM_API_HOST=pharmeum-users-api
+      - PHARMEUM_API_PORT=8080
+      - PHARMEUM_API_SSL=true
+      - PHARMEUM_API_SERVER_CERT_PATH=./certs/server.crt
+      - PHARMEUM_API_SERVER_CERT_KEY=./certs/server.key
+      - PHARMEUM_EMAIL_ADDRESS=test111ua@gmail.com
+      - PHARMEUM_EMAIL_PASSWORD=10203040tesT
+      - PHARMEUM_WEBSITE_URL=http://localhost:3000
+      - PHARMEUM_DATABASE_NAME=users
+      - PHARMEUM_DATABASE_HOST=pharmeum-users-postgres
+      - PHARMEUM_DATABASE_PORT=5432
+      - PHARMEUM_DATABASE_USER=postgres
+      - PHARMEUM_DATABASE_PASSWORD=$POSTGRES_PASSWORD
+      - PHARMEUM_DATABASE_SSL=disable
+      - PHARMEUM_AUTHENTICATION_SECRET=SAERGJJ5GD7FIIJUMJBASY5MCAS7MMVE3XOYOWOHQPRQRVN4VGRW44UN
+    command: bash -c "./users-api migrate up"
+    depends_on:
+      pharmeum-users-postgres:
+        condition: service_healthy
+    networks:
+      - pharmeum
+
+  pharmeum-users-api:
+    container_name: pharmeum-users-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - PHARMEUM_API_HOST=pharmeum-users-api
+      - PHARMEUM_API_PORT=8080
+      - PHARMEUM_API_SSL=true
+      - PHARMEUM_API_SERVER_CERT_PATH=./certs/server.crt
+      - PHARMEUM_API_SERVER_CERT_KEY=./certs/server.key
+      - PHARMEUM_EMAIL_ADDRESS=test111ua@gmail.com
+      - PHARMEUM_EMAIL_PASSWORD=10203040tesT
+      - PHARMEUM_WEBSITE_URL=http://localhost:3000
+      - PHARMEUM_DATABASE_NAME=users
+      - PHARMEUM_DATABASE_HOST=pharmeum-users-postgres
+      - PHARMEUM_DATABASE_PORT=5432
+      - PHARMEUM_DATABASE_USER=postgres
+      - PHARMEUM_DATABASE_PASSWORD=$POSTGRES_PASSWORD
+      - PHARMEUM_DATABASE_SSL=disable
+      - PHARMEUM_AUTHENTICATION_SECRET=SAERGJJ5GD7FIIJUMJBASY5MCAS7MMVE3XOYOWOHQPRQRVN4VGRW44UN
+    ports:
+      - 8080:8080
+    command: bash -c "./users-api run"
+    depends_on:
+      pharmeum-users-postgres:
+        condition: service_healthy
+    networks:
+      - pharmeum
