@@ -1,9 +1,10 @@
 -- +migrate Up
 
 CREATE TABLE tokens(
-  email varchar(256) not null,
   token varchar(128) PRIMARY KEY ,
-  last_sent_at timestamp without time zone
+  user_id integer,
+  last_sent_at timestamp without time zone,
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- +migrate Down

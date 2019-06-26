@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/alexcesaro/mail"
-  packages = ["gomail","mailer","quotedprintable"]
-  revision = "29068ce49a1794a317d5bf0dd2580f561125fc45"
-
-[[projects]]
   name = "github.com/asaskevich/govalidator"
   packages = ["."]
   revision = "ccb8e960c48f04d6935e72476ae4a51028f9e22f"
@@ -54,6 +48,12 @@
   packages = ["."]
   revision = "47840abb19b36dcf4d3ab4123b605b28ea511bc8"
   version = "v4.0.2"
+
+[[projects]]
+  name = "github.com/go-gomail/gomail"
+  packages = ["."]
+  revision = "41f3572897373c5538c50a2402db15db079fa4fd"
+  version = "2.0.0"
 
 [[projects]]
   name = "github.com/go-ozzo/ozzo-dbx"
@@ -176,6 +176,12 @@
   version = "v1.0.3"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/stellar/go"
+  packages = ["support/errors"]
+  revision = "11a5ac0fb3f78114e3d9c0da83e4f3dbb058ee38"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
@@ -203,7 +209,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["cpu","unix"]
-  revision = "d432491b91382bba9c2a91776aa47c9430183a6f"
+  revision = "c5567b49c5d04a5f83870795b8c0e2df43a8ce32"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -224,6 +230,12 @@
   version = "v1.21.1"
 
 [[projects]]
+  branch = "v3"
+  name = "gopkg.in/alexcesaro/quotedprintable.v3"
+  packages = ["."]
+  revision = "2caba252f4dc53eaf6b553000885530023f54623"
+
+[[projects]]
   name = "gopkg.in/gorp.v1"
   packages = ["."]
   revision = "6a667da9c028871f98598d85413e3fc4c6daa52e"
@@ -232,6 +244,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1c6ba90644d575b3075eb4c2c0da5b0efb1d5952c55192631e6ac0d4fa735670"
+  inputs-digest = "527b0abf12e61362135faa1f045e0ccb4e69c26de85d65f8c501dafe9070378f"
   solver-name = "gps-cdcl"
   solver-version = 1

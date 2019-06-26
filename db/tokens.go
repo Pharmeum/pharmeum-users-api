@@ -4,7 +4,7 @@ import "time"
 
 type Token struct {
 	Token      string    `db:"pk,token"`
-	Email      string    `db:"email"`
+	UserID     uint64    `db:"user_id"`
 	LastSentAt time.Time `db:"last_sent_at"`
 }
 

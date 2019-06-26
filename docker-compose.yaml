@@ -64,7 +64,7 @@ services:
       - PHARMEUM_API_SERVER_CERT_KEY=./certs/server.key
       - PHARMEUM_EMAIL_ADDRESS=test111ua@gmail.com
       - PHARMEUM_EMAIL_PASSWORD=10203040tesT
-      - PHARMEUM_WEBSITE_URL=http://localhost:3000
+      - PHARMEUM_WEBSITE_URL=https://localhost:3000
       - PHARMEUM_DATABASE_NAME=users
       - PHARMEUM_DATABASE_HOST=pharmeum-users-postgres
       - PHARMEUM_DATABASE_PORT=5432

@@ -45,7 +45,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := DB(r).GetUser(loginRequest.Email)
 	if err != nil {
-		Log(r).WithField("db", "Users").Error(err)
+		Log(r).WithError(err).Error("failed to get user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -28,7 +28,7 @@ func New(emailAddress, password, host string, port int) *ClientImpl {
 }
 
 func (c ClientImpl) Signup(to, link string) error {
-	dialer := gomail.NewDialer(c.host, c.port, c.emailAddress, c.password)
+	dialer := gomail.NewPlainDialer(c.host, c.port, c.emailAddress, c.password)
 	msg := gomail.NewMessage()
 	msg.SetAddressHeader("From", c.emailAddress, "Pharmeum")
 	msg.SetHeader("To", to)
@@ -42,7 +42,7 @@ func (c ClientImpl) Signup(to, link string) error {
 }
 
 func (c ClientImpl) Forgot(to, link string) error {
-	dialer := gomail.NewDialer(c.host, c.port, c.emailAddress, c.password)
+	dialer := gomail.NewPlainDialer(c.host, c.port, c.emailAddress, c.password)
 	msg := gomail.NewMessage()
 	msg.SetAddressHeader("From", c.emailAddress, "Pharmeum")
 	msg.SetHeader("To", to)
@@ -59,7 +59,7 @@ func (c ClientImpl) Forgot(to, link string) error {
 }
 
 func (c ClientImpl) NewPassword(to string) error {
-	dialer := gomail.NewDialer(c.host, c.port, c.emailAddress, c.password)
+	dialer := gomail.NewPlainDialer(c.host, c.port, c.emailAddress, c.password)
 	msg := gomail.NewMessage()
 	msg.SetAddressHeader("From", c.emailAddress, "Pharmeum")
 	msg.SetHeader("To", to)

@@ -52,8 +52,8 @@ func (a *App) Start() error {
 	httpServer := http.Server{
 		Addr:           serverHost,
 		Handler:        router,
-		ReadTimeout:    5 * time.Second,
-		WriteTimeout:   5 * time.Second,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
 		IdleTimeout:    120 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}

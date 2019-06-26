@@ -15,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const durtionThreshold = time.Second * 5
+const durationThreshold = time.Second * 10
 
 func Router(
 	log *logrus.Entry,
@@ -38,7 +38,7 @@ func Router(
 
 	router.Use(
 		cors.Handler,
-		middlewares.Logger(log, durtionThreshold),
+		middlewares.Logger(log, durationThreshold),
 		middlewares.Ctx(
 			handlers.CtxLog(log),
 			handlers.CtxHTTP(http),

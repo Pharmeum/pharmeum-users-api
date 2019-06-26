@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -82,9 +83,22 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := DB(r).GetUser(dbUser.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(ErrResponse(http.StatusBadRequest, errors.New("invalid email address")))
+			return
+		}
+
+		log.WithError(err).Errorf("failed to get user by email %s", dbUser.Email)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	token := uuid.NewV4()
 	confirmToken := &db.Token{
-		Email:      signupRequest.Email,
+		UserID:     user.ID,
 		Token:      token.String(),
 		LastSentAt: time.Now(),
 	}

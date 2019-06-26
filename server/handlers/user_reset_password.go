@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 
 	"github.com/Pharmeum/pharmeum-users-api/db"
 
-	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/twinj/uuid"
 )
@@ -39,9 +40,14 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	user, err := DB(r).GetUser(resetPasswordRequest.Email)
 	if err != nil {
-		log.WithError(err).Error("failed to get user")
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(ErrResponse(http.StatusBadRequest, errors.New("invalid email address")))
+			return
+		}
+
+		log.WithError(err).Errorf("failed to get user by email %s", resetPasswordRequest.Email)
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write(ErrResponse(http.StatusInternalServerError, err))
 		return
 	}
 
@@ -55,7 +61,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	token := uuid.NewV4()
 
 	emailToken := &db.Token{
-		Email:      resetPasswordRequest.Email,
+		UserID:     user.ID,
 		Token:      token.String(),
 		LastSentAt: time.Now(),
 	}
@@ -68,7 +74,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//link to web app new password form
-	link := fmt.Sprintf("%s/recovery?token=%s", WebApp(r).String(), token.String())
+	link := fmt.Sprintf("%s/recovery-password?token=%s", WebApp(r).String(), token.String())
 
 	//skip err for Email client
 	if err := EmailClient(r).Forgot(user.Email, link); err != nil {

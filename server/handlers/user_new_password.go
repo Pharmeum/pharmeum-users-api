@@ -1,79 +1,95 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 
+	"github.com/Pharmeum/pharmeum-users-api/db"
+
+	"github.com/go-ozzo/ozzo-validation"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
+type NewPasswordRequest struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
+func (n NewPasswordRequest) Validate() error {
+	return validation.ValidateStruct(&n,
+		validation.Field(&n.Password, validation.Required),
+		validation.Field(&n.Token, validation.Required),
+	)
+}
+
 func NewPassword(w http.ResponseWriter, r *http.Request) {
 	log := Log(r).WithField("db", "email_tokens")
-	token := r.URL.Query().Get("token")
-	if token == "" {
-		w.Write(ErrResponse(400, errors.New("failed to found token in request params")))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
-	if token == "" {
-		_, _ = w.Write(ErrResponse(http.StatusBadRequest, errors.New("empty token parameter in request")))
+	request := &NewPasswordRequest{}
+	if err := json.NewDecoder(r.Body).Decode(request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	userToken, err := DB(r).GetUserByToken(token)
-	if err != nil {
-		log.WithError(err).Error("failed to get user token")
 		w.Write(ErrResponse(http.StatusBadRequest, err))
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if userToken == nil {
-		w.Write(ErrResponse(400, errors.New("no such user with provided userToken address")))
+	if err := request.Validate(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write(ErrResponse(http.StatusBadRequest, err))
 		return
 	}
 
-	newCreds := &struct {
-		Password string `json:"password"`
-	}{}
-
-	if err := json.NewDecoder(r.Body).Decode(newCreds); err != nil {
-		w.Write(ErrResponse(400, err))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	if newCreds.Password == "" {
-		w.Write(ErrResponse(400, errors.New("empty password")))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newCreds.Password), 8)
+	token, err := DB(r).GetUserByToken(request.Token)
 	if err != nil {
-		w.Write(ErrResponse(400, err))
-		w.WriteHeader(http.StatusBadRequest)
+		if err == sql.ErrNoRows {
+			log.Debug("Token ID = ", request.Token)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(ErrResponse(http.StatusBadRequest, errors.New("Verification email was already used")))
+			return
+		}
+
+		log.WithError(err).Error("failed to get user token")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(ErrResponse(http.StatusBadRequest, err))
 		return
 	}
 
-	if err := DB(r).SetUserNewPassword(userToken.Email, string(hashedPassword)); err != nil {
-		Log(r).WithField("user", "new password").Error(err)
+	if token == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(ErrResponse(http.StatusBadRequest, errors.New("no such user with provided token address")))
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), 8)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(ErrResponse(http.StatusBadRequest, err))
+		return
+	}
+
+	if err := DB(r).SetUserNewPassword(&db.User{ID: token.UserID, Password: string(hashedPassword)}); err != nil {
+		Log(r).WithError(err).Error("failed to update user password")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if err := DB(r).DeleteToken(token); err != nil {
+	if err := DB(r).DeleteToken(request.Token); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	user, err := DB(r).GetUserByID(token.UserID)
+	if err != nil {
+		log.WithError(err).Error("failed to get user by id")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	//notify user about password changing
-	if err := EmailClient(r).NewPassword(userToken.Email); err != nil {
-		Log(r).WithField("email_client", "notification").Error("failed to send notification about new password to", userToken)
+	if err := EmailClient(r).NewPassword(user.Email); err != nil {
+		Log(r).WithField("email_client", "notification").Error("failed to send notification about new password to", token)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
