@@ -1,7 +1,8 @@
 package email
 
 import (
-	"github.com/alexcesaro/mail/gomail"
+	"github.com/go-gomail/gomail"
+	"github.com/stellar/go/support/errors"
 )
 
 type Client interface {
@@ -27,53 +28,47 @@ func New(emailAddress, password, host string, port int) *ClientImpl {
 }
 
 func (c ClientImpl) Signup(to, link string) error {
-	from := c.emailAddress
-	password := c.password
+	dialer := gomail.NewDialer(c.host, c.port, c.emailAddress, c.password)
 	msg := gomail.NewMessage()
-	msg.SetAddressHeader("From", from, "Pharmeum")
+	msg.SetAddressHeader("From", c.emailAddress, "Pharmeum")
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Account Verification Pharmeum")
 	msg.SetBody("text/html", "To verify your account, please click on the link: "+link)
-
-	m := gomail.NewMailer(c.host, from, password, c.port)
-	if err := m.Send(msg); err != nil {
-		return err
+	if err := dialer.DialAndSend(msg); err != nil {
+		return errors.Wrap(err, "failed to send sign up verification email")
 	}
 
 	return nil
 }
 
 func (c ClientImpl) Forgot(to, link string) error {
-	from := c.emailAddress
-	password := c.password
+	dialer := gomail.NewDialer(c.host, c.port, c.emailAddress, c.password)
 	msg := gomail.NewMessage()
-	msg.SetAddressHeader("From", from, "Pharmeum")
+	msg.SetAddressHeader("From", c.emailAddress, "Pharmeum")
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Account Verification Pharmeum")
 	msg.SetBody("text/html", "To change your password, please click on the link: <a href=\""+link+
 		"\">"+link+"</a><br><br>Best Regards,<br>Pharmeum")
 
-	m := gomail.NewMailer(c.host, from, password, c.port)
-	if err := m.Send(msg); err != nil {
-		return err
+	//TODO wait until Zain provide valid HTML template
+	if err := dialer.DialAndSend(msg); err != nil {
+		return errors.Wrap(err, "failed to send forgot password email")
 	}
 
 	return nil
 }
 
 func (c ClientImpl) NewPassword(to string) error {
-	from := c.emailAddress
-	password := c.password
+	dialer := gomail.NewDialer(c.host, c.port, c.emailAddress, c.password)
 	msg := gomail.NewMessage()
-
-	msg.SetAddressHeader("From", from, "Pharmeum")
+	msg.SetAddressHeader("From", c.emailAddress, "Pharmeum")
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Pharmeum password changed")
 	msg.SetBody("text/html", "Your password was successfully changed")
 
-	m := gomail.NewMailer(c.host, from, password, c.port)
-	if err := m.Send(msg); err != nil {
-		return err
+	//TODO wait until Zain provide valid HTML template
+	if err := dialer.DialAndSend(msg); err != nil {
+		return errors.Wrap(err, "failed to send new password request")
 	}
 
 	return nil

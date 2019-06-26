@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -96,11 +95,12 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link := fmt.Sprintf("%s/signupRequest/signup/confirm?token=%s&email=%s", HTTP(r).String(), token.String(), signupRequest.Email)
-	err = EmailClient(r).Signup(signupRequest.Email, link)
-	if err != nil {
-		Log(r).WithField("smtp", "client").Error(err)
-	}
+	//TODO: wait until Zain provide valid HTML template
+	//link := fmt.Sprintf("%s/confirm/confirm?token=%s&email=%s", HTTP(r).String(), token.String(), signupRequest.Email)
+	//err = EmailClient(r).Signup(signupRequest.Email, link)
+	//if err != nil {
+	//	Log(r).WithField("smtp", "client").Error(err)
+	//}
 
 	w.WriteHeader(http.StatusCreated)
 }

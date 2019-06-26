@@ -28,10 +28,10 @@ func Router(
 	router := chi.NewRouter()
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "x-auth"},
-		ExposedHeaders:   []string{"Link"},
+		AllowedOrigins:   []string{"*", "https://localhost:3000"},
+		AllowedMethods:   []string{"*", "GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*", "Accept", "Authorization", "Content-Type", "X-CSRF-Token", "x-auth"},
+		ExposedHeaders:   []string{"*", "Link"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	})
@@ -53,7 +53,7 @@ func Router(
 		router.Post("/login", handlers.Login)
 		router.Post("/signup", handlers.Signup)
 		router.Put("/new_password", handlers.NewPassword)
-		router.Get("/reset_password", handlers.ResetPassword)
+		router.Post("/reset_password", handlers.ResetPassword)
 	})
 
 	return router

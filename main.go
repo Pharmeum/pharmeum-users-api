@@ -80,6 +80,7 @@ func (a *App) Start() error {
 				tls.CurveP256,
 				tls.X25519, // Go 1.8 only
 			},
+			InsecureSkipVerify: true,
 		}
 
 		httpServer.TLSConfig = tlsConfig

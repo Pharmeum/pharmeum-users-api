@@ -72,8 +72,8 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	//skip err for Email client
 	if err := EmailClient(r).Forgot(user.Email, link); err != nil {
-		Log(r).WithField("google", "smtp").Error(fmt.Sprintf("failed to send forgot password email %s", err))
+		Log(r).Errorf("failed to send forgot password email %s", err)
 	}
 
-	w.WriteHeader(http.StatusAccepted)
+	w.WriteHeader(http.StatusOK)
 }
