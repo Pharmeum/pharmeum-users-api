@@ -4,12 +4,10 @@ import (
 	"net/url"
 	"sync"
 
+	"github.com/Pharmeum/pharmeum-users-api/db"
 	"github.com/Pharmeum/pharmeum-users-api/email"
 
-	"github.com/Pharmeum/pharmeum-users-api/db"
-
 	"github.com/go-chi/jwtauth"
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 
 	"github.com/sirupsen/logrus"
 )
@@ -27,13 +25,12 @@ type ConfigImpl struct {
 	sync.Mutex
 
 	//internal objects
-	http          *HTTP
-	log           *logrus.Entry
-	email         *email.ClientImpl
-	webApp        *url.URL
-	channelClient *channel.Client
-	db            *db.DB
-	jwt           *jwtauth.JWTAuth
+	http   *HTTP
+	log    *logrus.Entry
+	email  *email.ClientImpl
+	webApp *url.URL
+	db     *db.DB
+	jwt    *jwtauth.JWTAuth
 }
 
 func New() Config {
