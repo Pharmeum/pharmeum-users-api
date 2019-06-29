@@ -16,9 +16,9 @@ func (u User) TableName() string {
 }
 
 func (d *DB) GetUser(email string) (*User, error) {
-	var user User
-	err := d.db.Select().Where(dbx.HashExp{"email": email}).One(&user)
-	return &user, err
+	user := &User{}
+	err := d.db.Select().Where(dbx.HashExp{"email": email}).One(user)
+	return user, err
 }
 
 func (d *DB) GetUserByID(id uint64) (*User, error) {
