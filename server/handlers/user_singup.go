@@ -57,14 +57,13 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	createdUser, err := DB(r).GetUser(signupRequest.Email)
 	if err != nil && err != sql.ErrNoRows {
-		log.WithError(err).Error("failed to get signupRequest")
+		log.WithError(err).Errorf("failed to get user with email = %s", signupRequest.Email)
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write(ErrResponse(500, errors.New("Internal error")))
 		return
 	}
 
 	if createdUser != nil {
-		_, _ = w.Write(ErrResponse(400, errors.New("signupRequest with this email is already registered")))
+		_, _ = w.Write(ErrResponse(400, errors.New("user with this email is already registered")))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

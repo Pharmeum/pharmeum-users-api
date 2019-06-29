@@ -8,7 +8,6 @@ import (
 	"github.com/Pharmeum/pharmeum-users-api/db"
 	"github.com/Pharmeum/pharmeum-users-api/email"
 	"github.com/go-chi/jwtauth"
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/sirupsen/logrus"
 )
 
@@ -63,17 +62,6 @@ func CtxEmailClient(emailClient email.Client) func(context.Context) context.Cont
 func EmailClient(r *http.Request) email.Client {
 	return r.Context().Value(emailClientCtxKey).(email.Client)
 }
-
-func CtxChannelClient(channelClient *channel.Client) func(context.Context) context.Context {
-	return func(ctx context.Context) context.Context {
-		return context.WithValue(ctx, channelClientCtxKey, channelClient)
-	}
-}
-
-func ChannelClient(r *http.Request) *channel.Client {
-	return r.Context().Value(channelClientCtxKey).(*channel.Client)
-}
-
 func CtxDB(db *db.DB) func(context.Context) context.Context {
 	return func(ctx context.Context) context.Context {
 		return context.WithValue(ctx, dbCtxKey, db)
