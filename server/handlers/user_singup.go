@@ -56,7 +56,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createdUser, err := DB(r).GetUser(signupRequest.Email)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		log.WithError(err).Error("failed to get signupRequest")
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write(ErrResponse(500, errors.New("Internal error")))

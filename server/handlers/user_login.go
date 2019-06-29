@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -45,6 +46,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := DB(r).GetUser(loginRequest.Email)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write(ErrResponse(http.StatusUnauthorized, ErrInvalidEmailOrPassword))
+			return
+		}
+
 		Log(r).WithError(err).Error("failed to get user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
