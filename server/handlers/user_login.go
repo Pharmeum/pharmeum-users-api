@@ -30,6 +30,8 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
+const tokenExpirationDuration = time.Hour
+
 func Login(w http.ResponseWriter, r *http.Request) {
 	loginRequest := &LoginRequest{}
 	if err := json.NewDecoder(r.Body).Decode(loginRequest); err != nil {
@@ -71,7 +73,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	_, token, err := JWT(r).Encode(
 		jwt.MapClaims{
 			"id":  user.ID,
-			"exp": time.Now().Unix(),
+			"exp": time.Now().Add(tokenExpirationDuration).Unix(),
 		},
 	)
 	if err != nil {
