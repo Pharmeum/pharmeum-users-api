@@ -20,16 +20,15 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: go test -v ./...
       - run: go build cmd/main.go
+      - run:
+          name: Build and Deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build"
+            fi
 
 workflows:
   version: 2
   codebuild_and_codetest:
     jobs:
       - build
-
-deploy:
-  production:
-    branch: master
-    commands:
-      - echo 'deploying master branch'
-      - ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build"
