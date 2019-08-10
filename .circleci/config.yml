@@ -24,7 +24,7 @@ jobs:
           name: Build and Deploy
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build"
+              yes | ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build -d"
             fi
 
 workflows:
