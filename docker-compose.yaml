@@ -34,8 +34,6 @@ services:
       - PHARMEUM_API_SSL=true
       - PHARMEUM_API_SERVER_CERT_PATH=./certs/cert.pem
       - PHARMEUM_API_SERVER_CERT_KEY=./certs/key.pem
-      - PHARMEUM_API_SERVER_CERT_PATH=./certs/server.crt
-      - PHARMEUM_API_SERVER_CERT_KEY=./certs/server.key
       - PHARMEUM_EMAIL_ADDRESS=test111ua@gmail.com
       - PHARMEUM_EMAIL_PASSWORD=10203040tesT
       - PHARMEUM_WEBSITE_URL=https://localhost:3000
