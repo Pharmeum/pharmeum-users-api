@@ -21,12 +21,12 @@ jobs:
       - run: go test -v ./...
       - run: go build cmd/main.go
 
-    deployment:
-      master:
-        branch: master
-        commands:
-          - echo 'deploying master branch'
-          - ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build"
+  deployment:
+    master:
+      branch: master
+      commands:
+        - echo 'deploying master branch'
+        - ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build"
 
 workflows:
   version: 2
