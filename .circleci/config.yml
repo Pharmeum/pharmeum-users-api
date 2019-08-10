@@ -20,11 +20,12 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: go test -v ./...
       - run: go build cmd/main.go
+      - run: ssh-keyscan $DROPLET_IP >> ~/.ssh/known_hosts
       - run:
           name: Build and Deploy
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              yes | ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build -d"
+              ssh -v $DROPLET_USER@$DROPLET_IP "cd ~/Pharmeum/pharmeum-users-api/; git pull; docker-compose up --build -d"
             fi
 
 workflows:
