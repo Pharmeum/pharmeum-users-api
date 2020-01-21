@@ -29,14 +29,14 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
-      - PHARMEUM_API_HOST=pharmeum-users-api
+      - PHARMEUM_API_HOST=127.17.0.1
       - PHARMEUM_API_PORT=8080
-      - PHARMEUM_API_SSL=true
+      - PHARMEUM_API_SSL=false
       - PHARMEUM_API_SERVER_CERT_PATH=./certs/cert.pem
       - PHARMEUM_API_SERVER_CERT_KEY=./certs/key.pem
       - PHARMEUM_EMAIL_ADDRESS=test111ua@gmail.com
       - PHARMEUM_EMAIL_PASSWORD=10203040tesT
-      - PHARMEUM_WEBSITE_URL=https://localhost:3000
+      - PHARMEUM_WEBSITE_URL=https://mvp.pharmeum.com
       - PHARMEUM_DATABASE_NAME=users
       - PHARMEUM_DATABASE_HOST=pharmeum-users-postgres
       - PHARMEUM_DATABASE_PORT=5432
@@ -46,7 +46,7 @@ services:
       - PHARMEUM_AUTHENTICATION_SECRET=SAERGJJ5GD7FIIJUMJBASY5MCAS7MMVE3XOYOWOHQPRQRVN4VGRW44UN
       - API_LOG_LEVEL=debug
     ports:
-      - 8080:8080
+      - "8080:8080"
     command: bash -c "./users-api migrate up && ./users-api run"
     depends_on:
       pharmeum-users-postgres:

@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/url"
+	"net/http"
 	"time"
 
 	"github.com/go-chi/jwtauth"
@@ -20,7 +21,7 @@ const durationThreshold = time.Second * 10
 func Router(
 	log *logrus.Entry,
 	emailClient email.Client,
-	http *url.URL,
+	url *url.URL,
 	webApp *url.URL,
 	db *db.DB,
 	jwtAuth *jwtauth.JWTAuth,
@@ -41,7 +42,7 @@ func Router(
 		middlewares.Logger(log, durationThreshold),
 		middlewares.Ctx(
 			handlers.CtxLog(log),
-			handlers.CtxHTTP(http),
+			handlers.CtxHTTP(url),
 			handlers.CtxEmailClient(emailClient),
 			handlers.CtxWebApp(webApp),
 			handlers.CtxDB(db),
@@ -54,6 +55,10 @@ func Router(
 		router.Post("/signup", handlers.Signup)
 		router.Put("/new_password", handlers.NewPassword)
 		router.Post("/reset_password", handlers.ResetPassword)
+	})
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"api":"pharmeum-users-api"}`))
 	})
 
 	return router
