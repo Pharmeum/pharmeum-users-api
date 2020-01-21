@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 	"net/url"
-	"net/http"
 	"time"
 
 	"github.com/go-chi/jwtauth"
