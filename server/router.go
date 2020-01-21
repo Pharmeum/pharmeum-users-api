@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net/http"
 	"net/url"
 	"net/http"
 	"time"
@@ -57,7 +58,7 @@ func Router(
 		router.Post("/reset_password", handlers.ResetPassword)
 	})
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`{"api":"pharmeum-users-api"}`))
 	})
 
